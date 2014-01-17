@@ -1,15 +1,11 @@
 # This is how you define your own custom exception classes
+require_relative 'transaction'
+
 class DepositError < StandardError
 end
 
 class BankAccount
   attr_reader :name, :position
-  # Contract for the BankAccount class
-  # - you can access full owner's name and position, but partial IBAN
-  # - you cannot access full IBAN
-  # - you can print partial account infos
-  # - you can print transactions only with a password
-  # - you can withdraw or deposit money
   
   MIN_DEPOSIT =  100
   
@@ -21,7 +17,7 @@ class BankAccount
     @name, @iban = name, iban
     
     add_transaction(initial_deposit)
-    account = account.to_s
+
   end
     
   def withdraw(amount)
@@ -37,7 +33,10 @@ class BankAccount
   def transactions_history(args = {})
 
     if args[:password] == @password
-      @transactions.each {|x| puts "#{x[1].strftime("%m/%d/%Y")} at #{x[1].strftime("%H:%M")} - Amount: #{x[0]}$"}
+    # your_transaction = Transaction.new(@transactions)
+     @transactions.each {|amount| puts amount}
+
+      # @transactions.each {|x| puts "#{x[1].strftime("%m/%d/%Y")} at #{x[1].strftime("%H:%M")} - Amount: #{x[0]}$"}
     elsif args.empty?
       puts "No password given." 
     else
@@ -58,7 +57,8 @@ class BankAccount
   private  
   
   def add_transaction(amount)
-    @transactions << [@position += amount, Time.now]
+    @position += amount
+    @transactions << Transaction.new(amount, Time.now)
     # Main account logic
     # Should add the amount in the transactions array
     # Should update the current position
